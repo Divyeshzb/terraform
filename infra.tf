@@ -6,12 +6,12 @@ resource "tls_private_key" "private_key" {
 resource "aws_key_pair" "key_pair" {
   key_name   = "terraformDemoKeyPair"       # Create a "terraformDemoKeyPair" to AWS!!
   public_key = tls_private_key.private_key.public_key_openssh
-
-  provisioner "local-exec" { # Create a "terraformDemoKeyPair.pem" to your computer!!
-    command = "echo '${tls_private_key.private_key.private_key_pem}' > ./terraformDemoKeyPair.pem"
-  }
 }
 
+resource "local_sensitive_file" "terraformDemoKeyPair" {
+    content  = "${tls_private_key.private_key.private_key_pem}"
+    filename = "${path.module}/terraformDemoKeyPair.pem"
+}
 
 resource "aws_default_vpc" "default" {
   tags = {
@@ -75,20 +75,6 @@ resource "aws_instance" "demo" {
       private_key = file("terraformDemoKeyPair.pem")
     }
   }
-
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "chmod +x /tmp/scripts/docker.sh",
-  #     "/tmp/scripts/docker.sh",
-  #   ]
-
-  #   connection {
-  #     type     = "ssh"
-  #     user     = "ubuntu"
-  #     host        = self.public_ip
-  #     private_key = file("terraformDemoKeyPair.pem")
-  #   }
-  # }
 
   tags = {
     type = "demo"
