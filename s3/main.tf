@@ -2,7 +2,7 @@
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = "tf-mgdevstack-test"
+  bucket = "tf-dm-test"
   acl    = "public-read"
 
   # Allow deletion of non-empty bucket
